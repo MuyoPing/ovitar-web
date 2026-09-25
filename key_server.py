@@ -1175,6 +1175,6 @@ class KeyServerHandler(http.server.SimpleHTTPRequestHandler):
 if __name__ == "__main__":
     init_db()
     ThreadingHTTPServer.allow_reuse_address = True
-    with ThreadingHTTPServer(("", PORT), KeyServerHandler) as httpd:
+    with ThreadingHTTPServer(("0.0.0.0", PORT), KeyServerHandler) as httpd:
         print(f"[OVITAR] Key Server running with ThreadingHTTPServer engine at http://127.0.0.1:{PORT}")
         httpd.serve_forever()
