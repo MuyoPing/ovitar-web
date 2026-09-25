@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="ko" dir="ltr">
+<head>
+<style>
+
+/* Prevent mouse drag block selection across the entire site */
+html, body {
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
+}
+input, textarea {
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  user-select: text !important;
+}
+
+</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>OVITAR - 관리자 & 라이선스 통합 제어 센터</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600;700&display=block">
+  <link rel="stylesheet" href="./css/index.Dp45hgx5.css">
+  <link rel="stylesheet" href="./css/about.V29mYoao.css">
+  <style>
+    :root {
+      --bg: #000000;
+      --bg-2: #09090b;
+      --bg-3: #121215;
+      --surface: rgba(255, 255, 255, 0.035);
+      --surface-hover: rgba(255, 255, 255, 0.065);
+      --border: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(255, 255, 255, 0.28);
+      --fg: #f5f5f7;
+      --fg-70: rgba(245, 245, 247, 0.72);
+      --fg-50: rgba(245, 245, 247, 0.5);
+      --fg-30: rgba(245, 245, 247, 0.3);
+      --r-md: 14px;
+      --r-lg: 20px;
+      --r-xl: 28px;
+      --font-mono: 'Geist Mono', monospace;
+    }
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'Geist', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Ambient Real Glow */
+    .ambient-glow {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1000px;
+      height: 420px;
+      background: radial-gradient(ellipse 50% 50% at 50% 0%, rgba(255, 255, 255, 0.06), transparent 75%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .real-nav {
+      height: 64px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(24px) saturate(140%);
+      -webkit-backdrop-filter: blur(24px) saturate(140%);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 clamp(20px, 4vw, 40px);
+    }
+    .real-logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: #fff;
+    }
+    .badge-real {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 9999px;
+      color: rgba(255, 255, 255, 0.85);
+      margin-left: 10px;
+    }
+
+    .admin-wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: clamp(32px, 4vw, 48px) clamp(20px, 4vw, 40px) 100px;
+    }
+    .top-lead {
+      margin-bottom: 32px;
+    }
+    .top-lead h1 {
+      font-size: clamp(32px, 4vw, 48px);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin: 0 0 8px 0;
+      color: #fff;
+    }
+    .top-lead p {
+      font-size: 14.5px;
+      color: var(--fg-50);
+      margin: 0;
+    }
+
+    /* Stats Grid */
+    .grid-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    @media (max-width: 860px) {
+      .grid-stats { grid-template-columns: repeat(2, 1fr); }
+    }
+    .stat-box {
+      background: #0d0d0f;
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      transition: border-color 0.2s;
+    }
+    .stat-box:hover {
+      border-color: rgba(255, 255, 255, 0.16);
+    }
+    .stat-tag {
+      font-size: 12.5px;
+      color: var(--fg-50);
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+    .stat-val {
+      font-size: 32px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.02em;
+    }
+
+    /* Action Card */
+    .real-card {
+      background: #0d0d0f;
+      border: 1px solid var(--border);
+      border-radius: var(--r-xl);
+      padding: 30px;
+      margin-bottom: 32px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    }
+    .card-head-title {
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin-bottom: 22px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #fff;
+    }
+
+    /* Real Form Inputs */
+    .form-group-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: flex-end;
+    }
+    .f-item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .f-label {
+      font-size: 12.5px;
+      color: var(--fg-70);
+      font-weight: 500;
+    }
+    .f-input, .f-select {
+      height: 44px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: #fff;
+      padding: 0 16px;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .f-input:focus, .f-select:focus {
+      border-color: rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.07);
+    }
+    .f-select {
+      padding-right: 28px;
+      cursor: pointer;
+    }
+    .f-select option {
+      background: #111;
+      color: #fff;
+    }
+
+    /* Real Buttons */
+    .btn-real-primary {
+      height: 44px;
+      padding: 0 24px;
+      border-radius: 9999px;
+      background: #fff;
+      color: #000;
+      font-weight: 650;
+      font-size: 13.5px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+    .btn-real-primary:hover {
+      opacity: 0.92;
+      transform: translateY(-1px);
+    }
+    .btn-real-primary:active {
+      transform: translateY(0);
+    }
+    .btn-real-ghost {
+      height: 34px;
+      padding: 0 14px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--fg);
+      font-size: 12px;
+      font-weight: 500;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .btn-real-ghost:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+    .btn-real-danger {
+      height: 34px;
+      padding: 0 14px;
+      border-radius: 9999px;
+      background: rgba(255, 69, 58, 0.12);
+      color: #ff6961;
+      font-size: 12px;
+      font-weight: 500;
+      border: 1px solid rgba(255, 69, 58, 0.25);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-real-danger:hover {
+      background: rgba(255, 69, 58, 0.22);
+    }
+
+    /* Real Table Design */
+    .table-frame {
+      border: 1px solid var(--border);
+      border-radius: var(--r-xl);
+      background: #0d0d0f;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+    .table-top-bar {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .table-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #fff;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: left;
+    }
+    th {
+      background: rgba(255, 255, 255, 0.02);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 20px;
+      color: var(--fg-50);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    td {
+      padding: 15px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: var(--fg-70);
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.025);
+      color: #fff;
+    }
+    .key-badge-real {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 5px 10px;
+      border-radius: 8px;
+      display: inline-block;
+      letter-spacing: 0.04em;
+    }
+
+    /* Minimal Real Badges */
+    .badge-status {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 9999px;
+      display: inline-block;
+      letter-spacing: 0.02em;
+    }
+    .badge-used { background: rgba(34, 197, 94, 0.12); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.25); }
+    .badge-unused { background: rgba(255, 255, 255, 0.06); color: var(--fg-50); border: 1px solid var(--border); }
+    .badge-tier-free { background: rgba(234, 179, 8, 0.1); color: #facc15; border: 1px solid rgba(234, 179, 8, 0.2); }
+    .badge-tier-pro { background: rgba(214, 92, 255, 0.12); color: #d65cff; border: 1px solid rgba(214, 92, 255, 0.25); }
+
+    /* Auth Modal */
+    #auth-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(24px) saturate(140%);
+      -webkit-backdrop-filter: blur(24px) saturate(140%);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .auth-card-real {
+      background: #101012;
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 28px;
+      padding: 38px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.06);
+      text-align: center;
+    }
+  </style>
+</head>
+<body ondragstart="return false;" onselectstart="return (event.target.tagName===\'INPUT\' || event.target.tagName===\'TEXTAREA\');">
+
+  <div class="ambient-glow"></div>
+
+  <!-- AUTH MODAL -->
+  <div id="auth-overlay">
+    <div class="auth-card-real">
+      <div style="display:flex; justify-content:center; margin-bottom:14px;">
+        <div style="display:flex; justify-content:center;"><svg viewBox="0 0 512 512" width="36" height="36" fill="#ffffff" style="display:block; filter:drop-shadow(0 6px 16px rgba(0,0,0,0.45));">
+  <path d="M 230 38 C 346 38, 442 130, 446 246 C 448 290, 436 332, 414 368 L 374 328 C 392 302, 400 272, 398 242 C 394 156, 324 88, 238 86 C 208 85, 178 93, 152 110 L 112 70 C 146 49, 186 38, 230 38 Z"/>
+        <path d="M 282 474 C 166 474, 70 382, 66 266 C 64 222, 76 180, 98 144 L 138 184 C 120 210, 112 240, 114 270 C 118 356, 188 424, 274 426 C 304 427, 334 419, 360 402 L 400 442 C 366 463, 326 474, 282 474 Z"/>
+        <path d="M 166 172 L 256 376 L 346 172 L 298 172 L 256 270 L 214 172 Z"/>
+</svg></div>
+      </div>
+      <h2 style="font-size: 21px; font-weight: 700; margin: 0 0 6px 0; color: #fff; letter-spacing: -0.02em;">관리자 시스템 인증</h2>
+      <p style="font-size: 13.5px; color: var(--fg-50); margin: 0 0 24px 0; line-height: 1.5;">OVITAR 라이선스 및 유저 레지스트리를 제어하려면 관리자 계정으로 로그인하세요.</p>
+      
+      <div style="text-align: left; margin-bottom: 14px;">
+        <label class="f-label" style="margin-bottom:6px; display:block;">관리자 아이디</label>
+        <input type="text" id="admin-user" class="f-input" style="width:100%; box-sizing:border-box;" placeholder="아이디 입력" value="lunatop3">
+      </div>
+
+      <div style="text-align: left; margin-bottom: 24px;">
+        <label class="f-label" style="margin-bottom:6px; display:block;">비밀번호</label>
+        <input type="password" id="admin-pass" class="f-input" style="width:100%; box-sizing:border-box;" placeholder="비밀번호 입력" value="asd3411@11">
+      </div>
+
+      <button onclick="loginAdmin()" class="btn-real-primary" style="width:100%; height:48px; font-size:14px;">관리자 로그인</button>
+      <div id="auth-msg" style="margin-top:14px; font-size:13px; color:#ff6961;"></div>
+    </div>
+  </div>
+
+  <!-- REAL TOP NAVIGATION -->
+  <nav class="real-nav">
+    <div style="display:flex; align-items:center;">
+      <a href="index.html" class="real-logo-wrap">
+        <svg viewBox="0 0 707 654" width="20" height="20" fill="#ffffff" style="display:block;">
+      <path d="M 353.5 48 C 475 48, 595 132, 638 238 C 655 280, 658 322, 646 364 C 638 393, 620 422, 592 446 L 538 402 C 564 380, 580 354, 586 325 C 594 286, 574 246, 532 205 C 485 159, 412 118, 335 118 C 278 118, 225 138, 182 174 L 134 122 C 192 73, 268 48, 353.5 48 Z"/>
+      <path d="M 353.5 606 C 232 606, 112 522, 69 416 C 52 374, 49 332, 61 290 C 69 261, 87 232, 115 208 L 169 252 C 143 274, 127 300, 121 329 C 113 368, 133 408, 175 449 C 222 495, 295 536, 372 536 C 429 536, 482 516, 525 480 L 573 532 C 515 581, 439 606, 353.5 606 Z"/>
+      <path d="M 238 226 L 353.5 470 L 469 226 L 418 226 L 353.5 362 L 289 226 Z"/>
+    </svg>
+        <span style="font-weight:700; font-size:16px; letter-spacing:-0.02em;">OVITAR</span>
+      </a>
+      <span class="badge-real">컨트롤 패널</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:14px;">
+      <span id="current-user-tag" style="font-size:13px; color:var(--fg-70); font-weight:500;">로그인 계정: <strong style="color:#fff;">lunatop3</strong></span>
+      <a href="index.html" class="btn-real-ghost" style="text-decoration:none;">홈페이지로 이동</a>
+      <button onclick="logoutAdmin()" class="btn-real-danger">로그아웃</button>
+    </div>
+  </nav>
+
+  <!-- MAIN BODY -->
+  <div class="admin-wrap">
+    
+    <div class="top-lead">
+      <h1>라이선스 & 유저 통합 관리 센터</h1>
+      <p>하드웨어 ID(HWID) 바인딩 및 계정 중복 사용 방지 현황을 실시간으로 모니터링하고 제어합니다.</p>
+    </div>
+
+    <!-- STATS -->
+    <div class="grid-stats">
+      <div class="stat-box">
+        <div class="stat-tag">총 발급된 라이선스 키</div>
+        <div class="stat-val" id="stat-total-keys">0</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-tag">실시간 사용 중인 키</div>
+        <div class="stat-val" id="stat-used-keys">0</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-tag">계정에 등록 완료된 키</div>
+        <div class="stat-val" id="stat-registered-keys">0</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-tag">등록된 회원 계정 수</div>
+        <div class="stat-val" id="stat-total-users">0</div>
+      </div>
+    </div>
+
+    <!-- KEY GENERATION CARD -->
+    <div class="real-card">
+      <div class="card-head-title">
+        <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3.5"/><path d="M8.5 8.5L13.5 13.5M11 11l1.5 1.5M12.5 9.5l1.5 1.5"/></svg>
+        <span>새 라이선스 키 생성 및 발급</span>
+      </div>
+      <div class="form-group-row">
+        <div class="f-item">
+          <label class="f-label">라이선스 등급</label>
+          <select id="gen-type" class="f-select">
+            <option value="dev">개발자 전용 (DEV)</option>
+            <option value="lifetime">영구 라이선스 (LIFETIME - ₩80,000)</option>
+            <option value="monthly">월간 라이선스 (MONTHLY 30일 - ₩30,000)</option>
+            <option value="weekly">주간 라이선스 (WEEKLY 7일 - ₩15,000)</option>
+            <option value="user">일반 커스텀 상용 (OVT)</option>
+          </select>
+        </div>
+
+        <div class="f-item">
+          <label class="f-label">유효 기간 (일 / 0=무제한)</label>
+          <input type="number" id="gen-days" class="f-input" style="width:130px;" value="0">
+        </div>
+
+        <div class="f-item">
+          <label class="f-label">발급 수량</label>
+          <input type="number" id="gen-count" class="f-input" style="width:80px;" value="1" min="1" max="50">
+        </div>
+
+        <div class="f-item" style="flex:1; min-width:220px;">
+          <label class="f-label">관리자 메모</label>
+          <input type="text" id="gen-note" class="f-input" style="width:100%; box-sizing:border-box;" placeholder="예: 디스코드 공식 이벤트, VIP 구매자 지급">
+        </div>
+
+        <div>
+          <button onclick="generateAdminKeys()" class="btn-real-primary">키 발급하기</button>
+        </div>
+      </div>
+
+      <div id="gen-result-alert" style="display:none; margin-top:18px; padding:14px 18px; border-radius:14px; background:rgba(255,255,255,0.04); border:1px solid var(--border); font-size:13px; color:var(--fg-70);"></div>
+    </div>
+
+
+    <!-- SCRIPT DEPLOYMENT & LOADER API CONTROL CARD -->
+    <div class="real-card">
+      <div class="card-head-title" style="justify-content:space-between; flex-wrap:wrap; gap:12px;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5l-2.5 3 2.5 3M12 5l2.5 3-2.5 3M9.5 3l-3 10"/></svg>
+          <span>로블록스 로더 스크립트 배포 & API 제어 센터</span>
+        </div>
+        <!-- Live Status Pill -->
+        <div id="api-status-badge" style="display:flex; align-items:center; gap:8px; background:rgba(34,197,94,0.12); border:1px solid rgba(34,197,94,0.25); color:#4ade80; padding:6px 14px; border-radius:9999px; font-size:12.5px; font-weight:650;">
+          <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#4ade80; box-shadow:0 0 8px #4ade80;"></span>
+          <span id="api-status-text">status: 정상 서비스 중 (ONLINE)</span>
+        </div>
+      </div>
+
+      <p style="font-size:13.5px; color:var(--fg-50); margin:0 0 20px 0; line-height:1.5;">
+        로블록스 내 로더 창에서 유저가 사이트 계정(아이디/비밀번호)을 치고 로그인하면, 아래에 저장된 스크립트를 서버 API가 실시간으로 내려줍니다.
+        API 상태를 '점검 중'이나 '오프라인'으로 전환하면 로더 화면에 실시간 상태 표시등과 함께 접속이 자동 제어됩니다.
+      </p>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr 1.5fr; gap:16px; margin-bottom:20px;">
+        <div class="f-item">
+          <label class="f-label">API 운영 상태 (스위치)</label>
+          <select id="script-api-status" class="f-select" onchange="updateApiStatusPreview()">
+            <option value="online">🟢 정상 서비스 (ONLINE - 초록불)</option>
+            <option value="maintenance">🟡 긴급 점검 중 (MAINTENANCE - 노란불)</option>
+            <option value="offline">🔴 서비스 비활성화 (OFFLINE - 빨간불)</option>
+          </select>
+        </div>
+
+        <div class="f-item">
+          <label class="f-label">스크립트 버전 (빌드 넘버)</label>
+          <input type="text" id="script-version" class="f-input" value="v0.6.0" placeholder="예: v0.6.0">
+        </div>
+
+        <div class="f-item">
+          <label class="f-label">상태 안내 메시지 (로더 표기용)</label>
+          <input type="text" id="script-api-msg" class="f-input" value="정상 서비스 중" placeholder="예: v0.6.0 최신 패치 배포 완료 / 정기 서버 점검">
+        </div>
+      </div>
+
+      <!-- HIGH-PERFORMANCE LARGE SCRIPT MANAGEMENT SYSTEM -->
+      <div style="margin-bottom:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-weight:700; font-size:14px; color:#fff;">배포할 메인 스크립트 관리</span>
+            <span id="script-mode-badge" style="font-size:11px; font-weight:700; background:rgba(34,197,94,0.15); color:#4ade80; border:1px solid rgba(34,197,94,0.3); padding:2px 8px; border-radius:9999px;">
+              🚀 대용량 파일 배포 모드 지원
+            </span>
+          </div>
+
+          <!-- Mode Switch Buttons -->
+          <div style="display:flex; background:#070709; border:1px solid var(--border); border-radius:10px; padding:3px; gap:4px;">
+            <button type="button" id="tab-btn-file" onclick="switchScriptInputMode('file')" style="background:#18181b; border:none; border-radius:7px; color:#fff; font-size:12px; font-weight:600; padding:6px 14px; cursor:pointer; transition:all 0.2s;">
+              📂 대용량 파일 업로드 (권장)
+            </button>
+            <button type="button" id="tab-btn-text" onclick="switchScriptInputMode('text')" style="background:transparent; border:none; border-radius:7px; color:var(--fg-50); font-size:12px; font-weight:600; padding:6px 14px; cursor:pointer; transition:all 0.2s;">
+              ✏️ 텍스트 직접 입력
+            </button>
+          </div>
+        </div>
+
+        <!-- 1. FILE UPLOAD DROPZONE -->
+        <div id="script-file-container" style="background:#070709; border:1.5px dashed rgba(255,255,255,0.15); border-radius:14px; padding:24px; text-align:center; position:relative; transition:all 0.25s ease;"
+             ondragover="handleScriptDragOver(event)" ondragleave="handleScriptDragLeave(event)" ondrop="handleScriptDrop(event)">
+          <input type="file" id="script-file-input" accept=".lua,.txt" onchange="handleScriptFileSelect(event)" style="display:none;">
+          
+          <div style="width:48px; height:48px; margin:0 auto 12px auto; background:rgba(255,255,255,0.05); border-radius:50%; display:flex; align-items:center; justify-content:center; border:1px solid rgba(255,255,255,0.1);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          </div>
+
+          <h4 style="margin:0 0 6px 0; font-size:15px; font-weight:700; color:#fff;">대용량 Lua 스크립트 파일을 끌어다 놓거나 클릭하여 선택</h4>
+          <p style="margin:0 0 16px 0; font-size:12.5px; color:var(--fg-50); line-height:1.4;">
+            용량 제한 없음 (수십 MB 지원) • 브라우저 렉(DDoS 프리징) 0% • 서버 파일(<code>scripts/main_script.lua</code>)로 1초 만에 직접 스트리밍 배포됩니다.
+          </p>
+
+          <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
+            <button type="button" onclick="document.getElementById('script-file-input').click()" class="btn-real-primary" style="height:36px; padding:0 20px; font-size:12.5px;">
+              📁 컴퓨터에서 파일 선택 (.lua / .txt)
+            </button>
+            <button type="button" onclick="downloadCurrentDeployedScript()" class="btn-real-ghost" style="height:36px; padding:0 18px; font-size:12.5px;">
+              📥 현재 배포 파일 다운로드
+            </button>
+          </div>
+
+          <!-- Progress Bar -->
+          <div id="upload-progress-box" style="display:none; margin-top:16px; background:#141417; border-radius:9999px; height:8px; overflow:hidden; border:1px solid rgba(255,255,255,0.08);">
+            <div id="upload-progress-fill" style="width:0%; height:100%; background:linear-gradient(90deg, #3b82f6, #10b981); transition:width 0.15s ease;"></div>
+          </div>
+          <div id="upload-status-text" style="margin-top:8px; font-size:12px; font-weight:600; display:none;"></div>
+
+          <!-- Active Deployed File Status Box -->
+          <div id="deployed-file-stats" style="margin-top:18px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:12px 18px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; text-align:left;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div style="width:36px; height:36px; background:rgba(34,197,94,0.1); border-radius:8px; display:flex; align-items:center; justify-content:center; color:#4ade80; font-weight:800; font-size:12px;">LUA</div>
+              <div>
+                <div style="font-size:13px; font-weight:700; color:#fff;" id="stat-filename">main_script.lua</div>
+                <div style="font-size:11.5px; color:var(--fg-50);" id="stat-filemeta">용량: 계산 중... | 라인수: - | 최근 배포: -</div>
+              </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span id="stat-status-badge" style="font-size:11.5px; font-weight:700; background:rgba(34,197,94,0.15); color:#4ade80; border:1px solid rgba(34,197,94,0.25); padding:3px 10px; border-radius:9999px;">
+                ● 정상 배포 및 작동 중
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. TEXTAREA DIRECT EDITOR (With Anti-Freeze & Smart Preview) -->
+        <div id="script-text-container" style="display:none; margin-top:12px;">
+          <div id="script-preview-alert" style="display:none; margin-bottom:8px; background:rgba(59,130,246,0.1); border:1px solid rgba(59,130,246,0.25); color:#93c5fd; padding:10px 14px; border-radius:10px; font-size:12.5px; line-height:1.4;">
+            🛡️ <b>대용량 스크립트 보호 모드:</b> 브라우저 렉 및 멈춤 현상을 원천 방지하기 위해 텍스트 상자에는 상위 미리보기만 표시됩니다. 전체 스크립트를 변경하시려면 상단 <b>[📂 대용량 파일 업로드]</b> 탭을 이용해 주세요.
+          </div>
+          <textarea id="script-content-area" onpaste="handleLargeTextPaste(event)" style="width:100%; box-sizing:border-box; height:180px; background:#070709; border:1px solid var(--border); border-radius:14px; color:#fff; font-family:'Geist Mono', monospace; font-size:13px; padding:14px; outline:none; resize:vertical; line-height:1.5;" placeholder="-- 여기에 Lua 스크립트를 입력하거나 붙여넣으세요..."></textarea>
+        </div>
+      </div>
+
+      <!-- DECOY FAKE SCRIPT & WEBHOOK RELAY CONFIG -->
+      <div style="display:grid; grid-template-columns: 1.5fr 1fr; gap:16px; margin-bottom:20px;">
+        <div class="f-item">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <label class="f-label">🛡️ 가짜 미끼 코드 (setclipboard 후킹 시 복사될 그럴싸한 가짜 스크립트)</label>
+            <span style="font-size:11.5px; color:#4ade80;">리버싱/덤퍼 시도자 기만용</span>
+          </div>
+          <textarea id="script-fake-area" style="width:100%; box-sizing:border-box; height:130px; background:#070709; border:1px solid var(--border); border-radius:14px; color:#aaa; font-family:'Geist Mono', monospace; font-size:12.5px; padding:12px; outline:none; resize:vertical; line-height:1.4;" placeholder="-- 여기에 복사 시도 시 낚시용으로 들어갈 가짜 스크립트를 입력하세요..."></textarea>
+        </div>
+
+        <div class="f-item">
+          <label class="f-label">🔒 보안 로깅용 디스코드 웹훅 URL (서버 중계 프록시)</label>
+          <p style="font-size:11.5px; color:var(--fg-50); margin:0 0 8px 0; line-height:1.4;">
+            클라이언트에는 웹훅 주소가 절대 노출되지 않으며, 서버 API(/api/webhook/relay)를 거쳐 디스코드로 안전하게 전송되므로 웹훅 테러/스팸이 원천 차단됩니다.
+          </p>
+          <input type="text" id="discord-webhook-input" class="f-input" placeholder="https://discord.com/api/webhooks/..." style="font-family:'Geist Mono', monospace; font-size:12px;">
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+        <div style="display:flex; gap:10px;">
+          <button onclick="saveScriptSettings()" class="btn-real-primary" style="height:42px; padding:0 24px;">스크립트 및 상태 즉시 저장</button>
+          <button onclick="loadScriptSettings()" class="btn-real-ghost" style="height:42px;">설정 다시 불러오기</button>
+        </div>
+        <div id="script-save-alert" style="display:none; padding:8px 16px; border-radius:10px; font-size:13px; font-weight:600;"></div>
+    <!-- CULTURELAND AUTO-BILLING & VOUCHER CONTROL CARD -->
+    <div class="real-card" style="border-color:rgba(250,204,21,0.25); background:linear-gradient(180deg, rgba(250,204,21,0.03) 0%, rgba(0,0,0,0) 100%);">
+      <div class="card-head-title" style="justify-content:space-between; flex-wrap:wrap; gap:12px;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#facc15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+          <span style="color:#fff;">문화상품권(컬쳐랜드) 자동결제 & 세션 관제탑</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; background:rgba(250,204,21,0.12); border:1px solid rgba(250,204,21,0.3); color:#facc15; padding:5px 14px; border-radius:9999px; font-size:12.5px; font-weight:700;">
+          <span>총 문상 누적 매출: ₩<span id="stat-cl-revenue">0</span>원</span>
+        </div>
+      </div>
+
+      <p style="font-size:13.5px; color:var(--fg-50); margin:0 0 18px 0; line-height:1.5;">
+        유저가 사이트 결제창에 문화상품권 핀번호를 입력하면, 서버가 아래 세션 토큰을 사용하여 관리자 계정으로 실시간 자동 충전 후 키를 즉각 발급합니다.
+      </p>
+
+      <div style="display:grid; grid-template-columns: 2fr 1fr; gap:16px; margin-bottom:16px;">
+        <div class="f-item">
+          <label class="f-label">컬쳐랜드 디바이스 세션 토큰 (KeepLoginConfig / Auth UUID)</label>
+          <div style="display:flex; gap:10px;">
+            <input type="text" id="cl-admin-token" class="f-input" style="flex:1; font-family:'Geist Mono', monospace; font-size:13px;" placeholder="UUID 토큰 입력" value="95cd4dcf-e26e-4738-a62d-c566f9308c8c">
+            <button onclick="saveCulturelandToken()" class="btn-real-primary" style="white-space:nowrap;">토큰 저장</button>
+          </div>
+        </div>
+
+        <div class="f-item">
+          <label class="f-label">관리자 직접 핀번호 테스트 충전</label>
+          <div style="display:flex; gap:10px;">
+            <input type="text" id="cl-test-pin" class="f-input" style="flex:1; font-family:'Geist Mono', monospace; font-size:13px;" placeholder="16~18자리 핀 입력">
+            <button onclick="testChargePin()" class="btn-real-ghost" style="white-space:nowrap;">테스트 충전</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="cl-admin-alert" style="display:none; padding:12px 16px; border-radius:12px; font-size:13px; margin-bottom:14px;"></div>
+
+      <!-- Recent Cultureland Payment Logs -->
+      <div style="margin-top:16px; border-top:1px solid rgba(255,255,255,0.06); padding-top:14px;">
+        <div style="font-size:12.5px; font-weight:700; color:var(--fg-70); margin-bottom:10px; text-transform:uppercase; letter-spacing:0.04em;">최근 문화상품권 자동결제 내역 (실시간 50건)</div>
+        <div style="max-height:160px; overflow-y:auto;">
+          <table style="font-size:12px;">
+            <thead>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.08);">
+                <th style="padding:6px 10px;">일시</th>
+                <th style="padding:6px 10px;">플랜</th>
+                <th style="padding:6px 10px;">핀번호 (마스킹)</th>
+                <th style="padding:6px 10px;">금액</th>
+                <th style="padding:6px 10px;">상태</th>
+                <th style="padding:6px 10px;">발급된 키</th>
+                <th style="padding:6px 10px;">연동 계정</th>
+              </tr>
+            </thead>
+            <tbody id="cl-logs-tbody">
+              <tr><td colspan="7" style="text-align:center; padding:18px; color:var(--fg-40);">결제 내역 로딩 중...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- LICENSE KEYS TABLE -->
+    <div class="table-frame" style="margin-bottom:40px;">
+      <div class="table-top-bar">
+        <div class="table-title">발급된 라이선스 키 목록 & 계정 바인딩 상태</div>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <input type="text" id="filter-search" oninput="filterTable()" class="f-input" placeholder="키, 계정명, HWID 검색..." style="width:260px; height:36px; font-size:12.5px;">
+          <button onclick="loadDashboardData()" class="btn-real-ghost">새로고침</button>
+        </div>
+      </div>
+
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>번호</th>
+              <th>라이선스 키</th>
+              <th>등급</th>
+              <th>사용 상태</th>
+              <th>등록 계정</th>
+              <th>하드웨어 ID (HWID)</th>
+              <th>만료 일시</th>
+              <th>관리자 메모</th>
+              <th style="text-align:right;">작업 관리</th>
+            </tr>
+          </thead>
+          <tbody id="keys-tbody">
+            <tr><td colspan="9" style="text-align:center; padding:36px; color:var(--fg-50);">데이터 로딩 중...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- USERS TABLE -->
+    <div class="table-frame">
+      <div class="table-top-bar">
+        <div class="table-title">가입된 회원 계정 목록</div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>번호</th>
+              <th>아이디</th>
+              <th>권한</th>
+              <th>가입 일시</th>
+              <th>최근 접속 일시</th>
+            </tr>
+          </thead>
+          <tbody id="users-tbody">
+            <tr><td colspan="5" style="text-align:center; padding:24px; color:var(--fg-50);">회원 목록 로딩 중...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  
+  <script>
+    const API_BASE = (window.location.protocol === 'file:' || (window.location.port !== '5500')) ? 'http://127.0.0.1:5500' : '';
+    let allKeys = [];
+    let allUsers = [];
+
+    function loginAdmin() {
+      const u = document.getElementById("admin-user").value.trim();
+      const p = document.getElementById("admin-pass").value.trim();
+      const msg = document.getElementById("auth-msg");
+      msg.innerText = "";
+
+      fetch(API_BASE + '/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: u, password: p })
+      })
+      .then(r => r.json())
+      .then(d => {
+        if (d.success && d.role === "admin") {
+          localStorage.setItem("ovitar_admin_user", d.username);
+          if (d.admin_token) localStorage.setItem("ovitar_admin_token", d.admin_token);
+          document.getElementById("auth-overlay").style.display = "none";
+          document.getElementById("current-user-tag").innerHTML = `로그인 계정: <strong style="color:#fff;">${d.username}</strong>`;
+          loadDashboardData();
+        } else if (d.success && d.role !== "admin") {
+          msg.innerText = "접근 거부: 관리자 권한이 없는 계정입니다.";
+        } else {
+          msg.innerText = d.message || "아이디 또는 비밀번호가 일치하지 않습니다.";
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        msg.innerText = "서버 연결에 실패했습니다. (http://127.0.0.1:5500 서버 가동 상태를 확인하세요)";
+      });
+    }
+
+    function getAdminToken() {
+      return localStorage.getItem("ovitar_admin_token") || "OVT_ADM_LUNA_984f1a_SECURE";
+    }
+
+    function logoutAdmin() {
+      localStorage.removeItem("ovitar_admin_user");
+      localStorage.removeItem("ovitar_admin_token");
+      document.getElementById("auth-overlay").style.display = "flex";
+    }
+
+    function checkLogin() {
+      const saved = localStorage.getItem("ovitar_admin_user");
+      if (saved && saved === "lunatop3") {
+        document.getElementById("auth-overlay").style.display = "none";
+        document.getElementById("current-user-tag").innerHTML = `로그인 계정: <strong style="color:#fff;">${saved}</strong>`;
+        loadDashboardData();
+      }
+    }
+
+    
+    function updateApiStatusPreview() {
+      const status = document.getElementById("script-api-status").value;
+      const badge = document.getElementById("api-status-badge");
+      const text = document.getElementById("api-status-text");
+
+      if (status === 'online') {
+        badge.style.background = 'rgba(34,197,94,0.12)';
+        badge.style.borderColor = 'rgba(34,197,94,0.25)';
+        badge.style.color = '#4ade80';
+        badge.children[0].style.background = '#4ade80';
+        badge.children[0].style.boxShadow = '0 0 8px #4ade80';
+        text.innerText = 'status: 정상 서비스 중 (ONLINE)';
+      } else if (status === 'maintenance') {
+        badge.style.background = 'rgba(234,179,8,0.12)';
+        badge.style.borderColor = 'rgba(234,179,8,0.25)';
+        badge.style.color = '#facc15';
+        badge.children[0].style.background = '#facc15';
+        badge.children[0].style.boxShadow = '0 0 8px #facc15';
+        text.innerText = 'status: 서버 점검 중 (MAINTENANCE)';
+      } else {
+        badge.style.background = 'rgba(239,68,68,0.12)';
+        badge.style.borderColor = 'rgba(239,68,68,0.25)';
+        badge.style.color = '#f87171';
+        badge.children[0].style.background = '#f87171';
+        badge.children[0].style.boxShadow = '0 0 8px #f87171';
+        text.innerText = 'status: 서비스 오프라인 (OFFLINE)';
+      }
+    }
+
+    let isLargeScriptMode = false;
+
+    function switchScriptInputMode(mode) {
+      const fileTab = document.getElementById("tab-btn-file");
+      const textTab = document.getElementById("tab-btn-text");
+      const fileBox = document.getElementById("script-file-container");
+      const textBox = document.getElementById("script-text-container");
+
+      if (mode === 'file') {
+        fileTab.style.background = "#18181b";
+        fileTab.style.color = "#fff";
+        textTab.style.background = "transparent";
+        textTab.style.color = "var(--fg-50)";
+        fileBox.style.display = "block";
+        textBox.style.display = "none";
+      } else {
+        textTab.style.background = "#18181b";
+        textTab.style.color = "#fff";
+        fileTab.style.background = "transparent";
+        fileTab.style.color = "var(--fg-50)";
+        textBox.style.display = "block";
+        fileBox.style.display = "none";
+      }
+    }
+
+    function handleScriptDragOver(e) {
+      e.preventDefault();
+      const dropzone = document.getElementById("script-file-container");
+      dropzone.style.borderColor = "var(--accent)";
+      dropzone.style.background = "rgba(59,130,246,0.06)";
+    }
+
+    function handleScriptDragLeave(e) {
+      e.preventDefault();
+      const dropzone = document.getElementById("script-file-container");
+      dropzone.style.borderColor = "rgba(255,255,255,0.15)";
+      dropzone.style.background = "#070709";
+    }
+
+    function handleScriptDrop(e) {
+      e.preventDefault();
+      handleScriptDragLeave(e);
+      if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        uploadScriptFileDirect(e.dataTransfer.files[0]);
+      }
+    }
+
+    function handleScriptFileSelect(e) {
+      if (e.target.files && e.target.files.length > 0) {
+        uploadScriptFileDirect(e.target.files[0]);
+      }
+    }
+
+    function uploadScriptFileDirect(file) {
+      if (!file) return;
+
+      const progressBox = document.getElementById("upload-progress-box");
+      const progressFill = document.getElementById("upload-progress-fill");
+      const statusText = document.getElementById("upload-status-text");
+
+      progressBox.style.display = "block";
+      statusText.style.display = "block";
+      statusText.style.color = "#93c5fd";
+      statusText.innerText = `⏳ 업로드 중: ${file.name} (${(file.size / 1024).toFixed(1)} KB)...`;
+      progressFill.style.width = "30%";
+
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", API_BASE + "/api/admin/script/upload", true);
+      xhr.setRequestHeader("X-Admin-Token", getAdminToken());
+      xhr.setRequestHeader("X-File-Name", encodeURIComponent(file.name));
+      xhr.setRequestHeader("Content-Type", "application/octet-stream");
+
+      xhr.upload.onprogress = function(e) {
+        if (e.lengthComputable) {
+          const pct = Math.round((e.loaded / e.total) * 100);
+          progressFill.style.width = pct + "%";
+          statusText.innerText = `⏳ 파일 전송 중 (${pct}%)... ${file.name}`;
+        }
+      };
+
+      xhr.onload = function() {
+        progressFill.style.width = "100%";
+        if (xhr.status === 200) {
+          try {
+            const res = JSON.parse(xhr.responseText);
+            statusText.style.color = "#4ade80";
+            statusText.innerText = `✅ ${res.message || "성공적으로 배포되었습니다!"}`;
+            loadScriptSettings();
+          } catch(err) {
+            statusText.style.color = "#4ade80";
+            statusText.innerText = "✅ 스크립트 파일이 성공적으로 배포되었습니다!";
+            loadScriptSettings();
+          }
+        } else {
+          statusText.style.color = "#f87171";
+          statusText.innerText = "❌ 업로드 실패 (" + xhr.status + "): " + xhr.responseText;
+        }
+        setTimeout(() => {
+          progressBox.style.display = "none";
+          statusText.style.display = "none";
+        }, 4000);
+      };
+
+      xhr.onerror = function() {
+        statusText.style.color = "#f87171";
+        statusText.innerText = "❌ 서버 통신 오류가 발생했습니다.";
+      };
+
+      xhr.send(file);
+    }
+
+    function downloadCurrentDeployedScript() {
+      const token = getAdminToken();
+      const url = API_BASE + "/api/admin/script/download?token=" + encodeURIComponent(token);
+      window.open(url, "_blank");
+    }
+
+    function handleLargeTextPaste(e) {
+      const clipboardData = e.clipboardData || window.clipboardData;
+      if (!clipboardData) return;
+      const pastedData = clipboardData.getData('Text');
+      if (pastedData && pastedData.length > 50000) {
+        e.preventDefault();
+        const blob = new Blob([pastedData], { type: 'text/plain;charset=utf-8' });
+        const autoFile = new File([blob], "pasted_script.lua", { type: "text/plain" });
+        alert(`⚡ 대용량 스크립트 감지 (${(pastedData.length / 1024).toFixed(1)} KB)!
+브라우저 렉(DDoS 프리징)을 방지하기 위해 스트리밍 파일 배포 방식으로 즉시 안전하게 업로드합니다.`);
+        switchScriptInputMode('file');
+        uploadScriptFileDirect(autoFile);
+      }
+    }
+
+    function loadScriptSettings() {
+      fetch(API_BASE + '/api/admin/script', {
+        headers: { 'X-Admin-Token': getAdminToken() }
+      })
+        .then(r => r.json())
+        .then(d => {
+          if (d) {
+            document.getElementById("script-api-status").value = d.api_status || 'online';
+            document.getElementById("script-version").value = d.script_version || 'v0.6.0';
+            document.getElementById("script-api-msg").value = d.api_message || '정상 서비스 중';
+            document.getElementById("script-content-area").value = d.script_content || '';
+            document.getElementById("script-fake-area").value = d.fake_script_content || '';
+            document.getElementById("discord-webhook-input").value = d.discord_webhook_url || '';
+            
+            // Update stats
+            isLargeScriptMode = !!d.is_large_file;
+            document.getElementById("stat-filename").innerText = d.file_name || 'main_script.lua';
+            document.getElementById("stat-filemeta").innerText = `용량: ${d.file_size_formatted || '0 B'} | 라인수: ${(d.line_count || 0).toLocaleString()} 줄 | 최근 배포: ${d.updated_at || '-'}`;
+            
+            const previewAlert = document.getElementById("script-preview-alert");
+            if (isLargeScriptMode) {
+              previewAlert.style.display = "block";
+              // Default to file mode to protect the user from textarea lags
+              switchScriptInputMode('file');
+            } else {
+              previewAlert.style.display = "none";
+            }
+            
+            updateApiStatusPreview();
+          }
+        })
+        .catch(err => console.error("Error loading script settings:", err));
+    }
+
+    function saveScriptSettings() {
+      const status = document.getElementById("script-api-status").value;
+      const ver = document.getElementById("script-version").value.trim();
+      const msg = document.getElementById("script-api-msg").value.trim();
+      const content = document.getElementById("script-content-area").value;
+      const fakeContent = document.getElementById("script-fake-area").value;
+      const webhookUrl = document.getElementById("discord-webhook-input").value.trim();
+      const alertBox = document.getElementById("script-save-alert");
+
+      fetch(API_BASE + '/api/admin/script', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-Admin-Token': getAdminToken()
+        },
+        body: JSON.stringify({
+          api_status: status,
+          script_version: ver,
+          api_message: msg,
+          script_content: content,
+          fake_script_content: fakeContent,
+          discord_webhook_url: webhookUrl
+        })
+      })
+      .then(r => r.json())
+      .then(d => {
+        alertBox.style.display = "block";
+        if (d.success) {
+          alertBox.style.background = "rgba(34,197,94,0.15)";
+          alertBox.style.color = "#4ade80";
+          alertBox.innerText = "✅ " + d.message;
+          updateApiStatusPreview();
+          loadScriptSettings();
+        } else {
+          alertBox.style.background = "rgba(239,68,68,0.15)";
+          alertBox.style.color = "#f87171";
+          alertBox.innerText = "❌ " + (d.message || "저장 실패");
+        }
+        setTimeout(() => { alertBox.style.display = "none"; }, 3500);
+      })
+      .catch(err => {
+        alertBox.style.display = "block";
+        alertBox.style.background = "rgba(239,68,68,0.15)";
+        alertBox.style.color = "#f87171";
+        alertBox.innerText = "❌ 서버 통신 오류: " + err.message;
+      });
+    }
+
+    function loadDashboardData() {
+      loadScriptSettings();
+      fetch(API_BASE + '/api/admin/keys', {
+        headers: { 'X-Admin-Token': getAdminToken() }
+      })
+        .then(r => r.json())
+        .then(data => {
+          if (data.success) {
+            allKeys = data.keys || [];
+            allUsers = data.users || [];
+            renderStats();
+            renderKeysTable(allKeys);
+            renderUsersTable(allUsers);
+
+            // Render Cultureland revenue and token
+            const revEl = document.getElementById("stat-cl-revenue");
+            if (revEl) revEl.innerText = (data.total_cultureland_revenue || 0).toLocaleString();
+
+            const tokenInput = document.getElementById("cl-admin-token");
+            if (tokenInput && data.cultureland_session_token) {
+              tokenInput.value = data.cultureland_session_token;
+            }
+
+            renderCulturelandLogs(data.cultureland_logs || []);
+          }
+        })
+        .catch(err => console.error(err));
+    }
+
+    function renderCulturelandLogs(logs) {
+      const tbody = document.getElementById("cl-logs-tbody");
+      if (!tbody) return;
+      if (!logs || logs.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:18px; color:var(--fg-40);">문화상품권 결제 내역이 없습니다.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = logs.map(l => {
+        const isSuccess = l.status === 'success';
+        const statusBadge = isSuccess
+          ? '<span style="color:#4ade80; font-weight:700;">성공</span>'
+          : `<span style="color:#f87171; font-weight:600;">실패 (${l.response_message || '거부됨'})</span>`;
+
+        return `
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.03);">
+            <td style="padding:7px 10px; color:var(--fg-60);">${formatDate(l.created_at)}</td>
+            <td style="padding:7px 10px; font-weight:600; color:#fff;">${l.plan.toUpperCase()}</td>
+            <td style="padding:7px 10px; font-family:var(--font-mono); color:#facc15;">${l.pin_code}</td>
+            <td style="padding:7px 10px; color:#fff;">₩${(l.amount || 0).toLocaleString()}</td>
+            <td style="padding:7px 10px;">${statusBadge}</td>
+            <td style="padding:7px 10px; font-family:var(--font-mono); color:#38bdf8;">${l.issued_key || '-'}</td>
+            <td style="padding:7px 10px; color:var(--fg-70);">${l.username ? '@' + l.username : '-'}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function saveCulturelandToken() {
+      const token = document.getElementById("cl-admin-token").value.trim();
+      const alertBox = document.getElementById("cl-admin-alert");
+      if (!token) {
+        alert("세션 토큰을 입력하세요.");
+        return;
+      }
+
+      fetch(API_BASE + '/api/admin/cultureland', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Admin-Token': getAdminToken()
+        },
+        body: JSON.stringify({ cultureland_session_token: token })
+      })
+      .then(r => r.json())
+      .then(d => {
+        alertBox.style.display = "block";
+        if (d.success) {
+          alertBox.style.background = "rgba(34,197,94,0.15)";
+          alertBox.style.color = "#4ade80";
+          alertBox.innerText = "✅ " + d.message;
+        } else {
+          alertBox.style.background = "rgba(239,68,68,0.15)";
+          alertBox.style.color = "#f87171";
+          alertBox.innerText = "❌ " + (d.message || "저장 실패");
+        }
+        setTimeout(() => { alertBox.style.display = "none"; }, 3500);
+      })
+      .catch(err => {
+        alertBox.style.display = "block";
+        alertBox.style.background = "rgba(239,68,68,0.15)";
+        alertBox.style.color = "#f87171";
+        alertBox.innerText = "❌ 통신 오류: " + err.message;
+      });
+    }
+
+    function testChargePin() {
+      const pin = document.getElementById("cl-test-pin").value.trim();
+      const alertBox = document.getElementById("cl-admin-alert");
+      if (!pin) {
+        alert("테스트할 16~18자리 핀번호를 입력하세요.");
+        return;
+      }
+
+      alertBox.style.display = "block";
+      alertBox.style.background = "rgba(250,204,21,0.15)";
+      alertBox.style.color = "#facc15";
+      alertBox.innerText = "⏳ 컬쳐랜드 서버로 테스트 충전 요청 전송 중...";
+
+      fetch(API_BASE + '/api/admin/cultureland', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Admin-Token': getAdminToken()
+        },
+        body: JSON.stringify({ action: "test_charge", pin: pin })
+      })
+      .then(r => r.json())
+      .then(d => {
+        alertBox.style.display = "block";
+        if (d.success) {
+          alertBox.style.background = "rgba(34,197,94,0.15)";
+          alertBox.style.color = "#4ade80";
+          alertBox.innerText = "✅ 테스트 충전 성공! 응답: " + JSON.stringify(d.result);
+          loadDashboardData();
+        } else {
+          alertBox.style.background = "rgba(239,68,68,0.15)";
+          alertBox.style.color = "#f87171";
+          alertBox.innerText = "❌ 테스트 충전 실패: " + (d.message || JSON.stringify(d.result || {}));
+        }
+      })
+      .catch(err => {
+        alertBox.style.display = "block";
+        alertBox.style.background = "rgba(239,68,68,0.15)";
+        alertBox.style.color = "#f87171";
+        alertBox.innerText = "❌ 통신 에러: " + err.message;
+      });
+    }
+
+    function renderStats() {
+      document.getElementById("stat-total-keys").innerText = allKeys.length;
+      document.getElementById("stat-used-keys").innerText = allKeys.filter(k => k.is_used || k.hwid).length;
+      document.getElementById("stat-registered-keys").innerText = allKeys.filter(k => k.registered_to).length;
+      document.getElementById("stat-total-users").innerText = allUsers.length;
+    }
+
+    function formatDate(ts) {
+      if (!ts || ts === 0) return "영구 (무제한)";
+      const d = new Date(ts * 1000);
+      return d.toLocaleDateString('ko-KR') + ' ' + d.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function renderKeysTable(keys) {
+      const tbody = document.getElementById("keys-tbody");
+      if (keys.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:36px; color:var(--fg-50);">발급된 라이선스가 없습니다.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = keys.map(k => {
+        let tierBadge = `<span class="badge-status" style="background:rgba(255,255,255,0.06); color:var(--fg);">${k.key_type.toUpperCase()}</span>`;
+        if (k.key_type === 'dev') tierBadge = `<span class="badge-status badge-tier-pro">개발자 (DEV)</span>`;
+        else if (k.key_type === 'lifetime' || k.duration_days === 0) tierBadge = `<span class="badge-status badge-tier-pro">영구 (₩80,000)</span>`;
+        else if (k.key_type === 'monthly' || k.duration_days === 30) tierBadge = `<span class="badge-status" style="background:rgba(139,92,246,0.15); color:#a78bfa; border:1px solid rgba(139,92,246,0.3);">월간 (₩30,000)</span>`;
+        else if (k.key_type === 'weekly' || k.duration_days === 7) tierBadge = `<span class="badge-status badge-tier-free" style="background:rgba(16,185,129,0.15); color:#34d399; border:1px solid rgba(16,185,129,0.3);">주간 (₩15,000)</span>`;
+        else if (k.key_type === 'free') tierBadge = `<span class="badge-status badge-tier-free">무료 (종료됨)</span>`;
+
+        const isUsed = (k.is_used === 1 || !!k.hwid);
+        const usedBadge = isUsed 
+          ? `<span class="badge-status badge-used">사용 중</span>` 
+          : `<span class="badge-status badge-unused">미사용</span>`;
+
+        const userDisplay = k.registered_to 
+          ? `<span style="font-weight:600; color:#fff;">@${k.registered_to}</span>` 
+          : `<span style="color:var(--fg-30);">미등록</span>`;
+
+        const activeText = k.is_active ? "비활성화" : "활성화";
+        const activeClass = k.is_active ? "btn-real-danger" : "btn-real-ghost";
+
+        return `
+          <tr>
+            <td style="color:var(--fg-30); font-family:var(--font-mono); font-size:12px;">#${k.id}</td>
+            <td><span class="key-badge-real">${k.key_string}</span></td>
+            <td>${tierBadge}</td>
+            <td>${usedBadge}</td>
+            <td>${userDisplay}</td>
+            <td style="font-family:var(--font-mono); font-size:12px; color:var(--fg-50);">${k.hwid ? k.hwid.substring(0, 14) + '...' : '-'}</td>
+            <td style="font-size:12.5px; color:var(--fg-70);">${formatDate(k.expires_at)}</td>
+            <td style="font-size:12px; color:var(--fg-50);">${k.note || k.claimed_by_ip || '-'}</td>
+            <td style="text-align:right;">
+              <button onclick="copyToClipboard('${k.key_string}')" class="btn-real-ghost">키 복사</button>
+              <button onclick="manageKey(${k.id}, 'toggle_active')" class="${activeClass}" style="margin-left:4px;">${activeText}</button>
+              ${k.hwid ? `<button onclick="manageKey(${k.id}, 'reset_hwid')" class="btn-real-ghost" style="margin-left:4px;">HWID 리셋</button>` : ''}
+              ${k.registered_to ? `<button onclick="manageKey(${k.id}, 'unbind_user')" class="btn-real-ghost" style="margin-left:4px;">연동 해제</button>` : ''}
+              <button onclick="manageKey(${k.id}, 'delete')" class="btn-real-danger" style="margin-left:4px;">삭제</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderUsersTable(users) {
+      const tbody = document.getElementById("users-tbody");
+      if (users.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:24px; color:var(--fg-50);">가입된 회원이 없습니다.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = users.map(u => `
+        <tr>
+          <td style="color:var(--fg-30); font-family:var(--font-mono); font-size:12px;">#${u.id}</td>
+          <td><strong style="color:#fff;">${u.username}</strong></td>
+          <td><span class="badge-status ${u.role === 'admin' ? 'badge-tier-pro' : 'badge-unused'}">${u.role.toUpperCase()}</span></td>
+          <td style="font-size:12px; color:var(--fg-50);">${formatDate(u.created_at)}</td>
+          <td style="font-size:12px; color:var(--fg-50);">${u.last_login ? formatDate(u.last_login) : '-'}</td>
+        </tr>
+      `).join('');
+    }
+
+    function filterTable() {
+      const q = document.getElementById("filter-search").value.toLowerCase();
+      const filtered = allKeys.filter(k => {
+        return (k.key_string && k.key_string.toLowerCase().includes(q)) ||
+               (k.registered_to && k.registered_to.toLowerCase().includes(q)) ||
+               (k.hwid && k.hwid.toLowerCase().includes(q)) ||
+               (k.note && k.note.toLowerCase().includes(q));
+      });
+      renderKeysTable(filtered);
+    }
+
+    function generateAdminKeys() {
+      const key_type = document.getElementById("gen-type").value;
+      const days = parseInt(document.getElementById("gen-days").value) || 0;
+      const count = parseInt(document.getElementById("gen-count").value) || 1;
+      const note = document.getElementById("gen-note").value.trim();
+      const alertBox = document.getElementById("gen-result-alert");
+
+      fetch(API_BASE + '/api/admin/generate-keys', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key_type, days, count, note })
+      })
+      .then(r => r.json())
+      .then(d => {
+        if (d.success) {
+          alertBox.style.display = "block";
+          alertBox.innerHTML = `
+            <div style="font-weight:600; color:#fff; margin-bottom:8px;">성공적으로 ${d.keys.length}개의 라이선스 키가 생성되었습니다:</div>
+            <div style="display:flex; flex-direction:column; gap:4px; font-family:var(--font-mono); font-size:13px; color:#4ade80;">
+              ${d.keys.map(k => `<span>• ${k}</span>`).join('')}
+            </div>
+          `;
+          loadDashboardData();
+        } else {
+          alertBox.style.display = "block";
+          alertBox.innerHTML = `<span style="color:#ff6961;">키 생성 오류: ${d.message}</span>`;
+        }
+      })
+      .catch(err => {
+        alertBox.style.display = "block";
+        alertBox.innerHTML = `<span style="color:#ff6961;">네트워크 오류가 발생했습니다.</span>`;
+      });
+    }
+
+    function manageKey(key_id, action) {
+      if (action === 'delete' && !confirm("정말로 이 라이선스 키를 삭제하시겠습니까?")) return;
+
+      fetch(API_BASE + '/api/admin/manage-key', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key_id, action })
+      })
+      .then(r => r.json())
+      .then(d => {
+        if (d.success) {
+          loadDashboardData();
+        } else {
+          alert("작업 실패: " + d.message);
+        }
+      });
+    }
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        alert("키가 클립보드에 복사되었습니다: " + text);
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", checkLogin);
+  </script>
+
+</body>
+</html>

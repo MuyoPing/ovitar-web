@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: ovitar-service
+    env: python
+    plan: free
+    buildCommand: ''
+    startCommand: python key_server.py
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0

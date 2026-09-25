@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="707" height="654" viewBox="0 0 707 654" role="img" aria-label="Ovitar Logo">
+  <title>Ovitar Logo</title>
+  <defs>
+    <linearGradient id="ovitar-glow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#d4d4d8"/>
+    </linearGradient>
+  </defs>
+  <g fill="currentColor" fill-rule="evenodd">
+    <!-- Path 1: Upper Right Aerodynamic Hyper-Wing & Sweeping Arc (forming the top/right of 'O') -->
+    <path d="M 353.5 48
+             C 475 48, 595 132, 638 238
+             C 655 280, 658 322, 646 364
+             C 638 393, 620 422, 592 446
+             L 538 402
+             C 564 380, 580 354, 586 325
+             C 594 286, 574 246, 532 205
+             C 485 159, 412 118, 335 118
+             C 278 118, 225 138, 182 174
+             L 134 122
+             C 192 73, 268 48, 353.5 48 Z"/>
+
+    <!-- Path 2: Lower Left Aerodynamic Hyper-Wing & Sweeping Arc (forming the bottom/left of 'O') -->
+    <path d="M 353.5 606
+             C 232 606, 112 522, 69 416
+             C 52 374, 49 332, 61 290
+             C 69 261, 87 232, 115 208
+             L 169 252
+             C 143 274, 127 300, 121 329
+             C 113 368, 133 408, 175 449
+             C 222 495, 295 536, 372 536
+             C 429 536, 482 516, 525 480
+             L 573 532
+             C 515 581, 439 606, 353.5 606 Z"/>
+
+    <!-- Path 3: The Central Dynamic 'V' Cyber Blade (Ovitar's signature cutting chevron) -->
+    <path d="M 238 226
+             L 353.5 470
+             L 469 226
+             L 404 226
+             L 353.5 358
+             L 303 226 Z"/>
+
+    <!-- Path 4: Kinetic Aerodynamic Slit / Speed Fin Accents -->
+    <path d="M 324 168 L 383 168 L 368 200 L 339 200 Z"/>
+  </g>
+</svg>
