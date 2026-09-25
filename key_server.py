@@ -23,7 +23,102 @@ ADMIN_TOKEN = "OVT_ADM_LUNA_984f1a_SECURE"
 SCRIPTS_DIR = os.path.join(DIRECTORY, "scripts")
 MAIN_SCRIPT_PATH = os.path.join(SCRIPTS_DIR, "main_script.lua")
 FAKE_SCRIPT_PATH = os.path.join(SCRIPTS_DIR, "fake_script.lua")
+OBFUSCATOR_DIR = os.environ.get("OBFUSCATOR_DIR", r"C:\Users\User\Documents\Codex\2026-09-22\x20\난독화기")
+OBFUSCATED_MAIN_PATH = os.path.join(SCRIPTS_DIR, "main_script.obf.luau")
+OBFUSCATED_REPORT_PATH = os.path.join(SCRIPTS_DIR, "main_script.obf.report.json")
+OBFUSCATED_FAKE_PATH = os.path.join(SCRIPTS_DIR, "fake_script.obf.luau")
 os.makedirs(SCRIPTS_DIR, exist_ok=True)
+
+import subprocess
+import tempfile
+
+def obfuscate_with_ovitar_engine(source_content, output_path=None, seed=None):
+    """
+    Invokes Ovitar Luau VM Obfuscator from C:\\Users\\User\\Documents\\Codex\\2026-09-22\\x20\\난독화기
+    Provides: AST identifier mangling, byte-level string XOR concealment, control flow flattening, and function VM virtualization.
+    """
+    if not os.path.isdir(OBFUSCATOR_DIR):
+        print(f"[OVITAR-OBF] Obfuscator directory not found: {OBFUSCATOR_DIR}")
+        return None, None
+
+    runner_path = os.path.join(OBFUSCATOR_DIR, "ovitar_runner.mjs")
+    if not os.path.exists(runner_path):
+        runner_code = (
+            "import { obfuscate } from './src/engine.mjs';\n"
+            "import fs from 'node:fs';\n"
+            "const input = fs.readFileSync(process.argv[2]);\n"
+            "const options = {};\n"
+            "if (process.argv[4]) options.seed = process.argv[4];\n"
+            "const res = obfuscate(input, options);\n"
+            "fs.writeFileSync(process.argv[3], res.code);\n"
+            "console.log(JSON.stringify(res.report));\n"
+        )
+        try:
+            with open(runner_path, "w", encoding="utf-8") as f:
+                f.write(runner_code)
+        except Exception as e:
+            print(f"[OVITAR-OBF] Error writing runner: {e}")
+            return None, None
+
+    with tempfile.TemporaryDirectory(prefix="ovt_obf_") as tmp_dir:
+        in_file = os.path.join(tmp_dir, "input.luau")
+        out_file = os.path.join(tmp_dir, "output.luau")
+        with open(in_file, "w", encoding="utf-8") as f:
+            f.write(source_content)
+
+        cmd = ["node", runner_path, in_file, out_file]
+        if seed:
+            cmd.append(str(seed))
+
+        start_time = time.time()
+        try:
+            proc = subprocess.run(
+                cmd,
+                cwd=OBFUSCATOR_DIR,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                timeout=120
+            )
+            elapsed = time.time() - start_time
+            if proc.returncode != 0:
+                print(f"[OVITAR-OBF] Execution error: {proc.stderr or proc.stdout}")
+                return None, None
+
+            report = json.loads(proc.stdout.strip())
+            report["elapsedSeconds"] = round(elapsed, 3)
+
+            with open(out_file, "r", encoding="utf-8") as f:
+                obfuscated_code = f.read()
+
+            if output_path:
+                os.makedirs(os.path.dirname(os.path.abspath(output_path)), exist_ok=True)
+                with open(output_path, "w", encoding="utf-8") as f:
+                    f.write(obfuscated_code)
+
+            return obfuscated_code, report
+        except Exception as e:
+            print(f"[OVITAR-OBF] Failed to run obfuscator: {e}")
+            return None, None
+
+def re_obfuscate_main_script():
+    if not os.path.exists(MAIN_SCRIPT_PATH):
+        return None, None
+    try:
+        with open(MAIN_SCRIPT_PATH, "r", encoding="utf-8", errors="ignore") as f:
+            src = f.read()
+        code, rep = obfuscate_with_ovitar_engine(src, output_path=OBFUSCATED_MAIN_PATH)
+        if rep:
+            with open(OBFUSCATED_REPORT_PATH, "w", encoding="utf-8") as f:
+                json.dump(rep, f, indent=2, ensure_ascii=False)
+            set_setting("script_obf_level", rep.get("protectionLevel", "source-transform"))
+            set_setting("script_obf_at", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+            set_setting("script_obf_bytes", str(rep.get("outputBytes", len(code))))
+            set_setting("script_obf_elapsed", str(rep.get("elapsedSeconds", 0)))
+        return code, rep
+    except Exception as e:
+        print(f"Error re-obfuscating main script: {e}")
+        return None, None
 
 def encrypt_payload(plain_text, salt=""):
     key = (SCRIPT_SECRET + salt).encode('utf-8')
@@ -41,6 +136,20 @@ def encrypt_payload(plain_text, salt=""):
     return base64.b64encode(encrypted).decode('ascii')
 
 def get_main_script():
+    use_obf = get_setting("use_obfuscation", "true").lower() == "true"
+    if use_obf and os.path.exists(OBFUSCATED_MAIN_PATH):
+        try:
+            with open(OBFUSCATED_MAIN_PATH, "r", encoding="utf-8", errors="ignore") as f:
+                return f.read()
+        except Exception as e:
+            print(f"Error reading obfuscated script: {e}")
+
+    # Fallback to building obfuscated script if needed
+    if use_obf and os.path.exists(MAIN_SCRIPT_PATH):
+        code, _ = re_obfuscate_main_script()
+        if code:
+            return code
+
     if os.path.exists(MAIN_SCRIPT_PATH):
         try:
             with open(MAIN_SCRIPT_PATH, "r", encoding="utf-8", errors="ignore") as f:
@@ -64,9 +173,19 @@ def save_main_script(content_str, filename="main_script.lua"):
         set_setting("script_content", content_str)
     else:
         set_setting("script_content", f"-- [DEPLOYED FILE: {filename} ({file_size:,} bytes) at {now_str}]")
+    
+    # Auto re-obfuscate upon save
+    re_obfuscate_main_script()
     return file_size, line_count, now_str
 
 def get_fake_script():
+    use_obf = get_setting("use_obfuscation", "true").lower() == "true"
+    if use_obf and os.path.exists(OBFUSCATED_FAKE_PATH):
+        try:
+            with open(OBFUSCATED_FAKE_PATH, "r", encoding="utf-8", errors="ignore") as f:
+                return f.read()
+        except Exception:
+            pass
     if os.path.exists(FAKE_SCRIPT_PATH):
         try:
             with open(FAKE_SCRIPT_PATH, "r", encoding="utf-8", errors="ignore") as f:
@@ -80,6 +199,10 @@ def save_fake_script(content_str):
     with open(FAKE_SCRIPT_PATH, "w", encoding="utf-8") as f:
         f.write(content_str)
     set_setting("fake_script_content", content_str)
+    try:
+        obfuscate_with_ovitar_engine(content_str, output_path=OBFUSCATED_FAKE_PATH)
+    except Exception:
+        pass
 
 def hash_pw(pw):
     return hashlib.sha256(pw.encode('utf-8')).hexdigest()
@@ -736,23 +859,40 @@ class KeyServerHandler(http.server.SimpleHTTPRequestHandler):
             set_setting("script_source_type", "file")
             set_setting("script_content", f"-- [DEPLOYED FILE: {filename} ({file_size:,} bytes) at {now_str}]")
 
-            if file_size < 1024:
-                size_str = f"{file_size} B"
-            elif file_size < 1024 * 1024:
-                size_str = f"{file_size / 1024:.2f} KB"
-            else:
-                size_str = f"{file_size / (1024 * 1024):.2f} MB"
+            # Auto-obfuscate uploaded script with Ovitar VM Obfuscator
+            obf_code, obf_rep = re_obfuscate_main_script()
 
             return self._send_json(200, {
                 "success": True,
-                "message": f"대용량 스크립트 파일이 성공적으로 배포되었습니다! ({size_str})",
+                "message": f"대용량 스크립트 파일이 성공적으로 배포 및 Ovitar VM 난독화되었습니다! ({size_str})",
                 "filename": filename,
                 "file_size": file_size,
                 "file_size_formatted": size_str,
                 "line_count": line_count + 1,
                 "checksum": checksum[:12] + "...",
-                "updated_at": now_str
+                "updated_at": now_str,
+                "obfuscated": bool(obf_code),
+                "obfuscation_level": obf_rep.get("protectionLevel") if obf_rep else "none"
             })
+
+        # 7-OBF. API: Admin Trigger Script Re-Obfuscation Manually
+        elif parsed.path == "/api/admin/script/obfuscate":
+            admin_token = self.headers.get("X-Admin-Token", "").strip()
+            if admin_token != ADMIN_TOKEN:
+                return self._send_json(403, {"success": False, "message": "관리자 인증 토큰이 유효하지 않습니다."})
+
+            code, rep = re_obfuscate_main_script()
+            if code and rep:
+                return self._send_json(200, {
+                    "success": True,
+                    "message": "Ovitar Luau VM 난독화가 성공적으로 완료되었습니다!",
+                    "report": rep
+                })
+            else:
+                return self._send_json(500, {
+                    "success": False,
+                    "message": "난독화 엔진 실행에 실패했습니다. (Node/Luau 도구 확인)"
+                })
 
         # 7. API: Admin Script & API Status Control
         elif parsed.path == "/api/admin/script":
@@ -1088,6 +1228,14 @@ class KeyServerHandler(http.server.SimpleHTTPRequestHandler):
             else:
                 display_content = main_script_content
 
+            obf_report = {}
+            if os.path.exists(OBFUSCATED_REPORT_PATH):
+                try:
+                    with open(OBFUSCATED_REPORT_PATH, "r", encoding="utf-8") as f:
+                        obf_report = json.load(f)
+                except Exception:
+                    pass
+
             return self._send_json(200, {
                 "api_status": get_setting("api_status", "online"),
                 "api_message": get_setting("api_message", "정상 서비스 중"),
@@ -1100,7 +1248,12 @@ class KeyServerHandler(http.server.SimpleHTTPRequestHandler):
                 "line_count": line_count,
                 "updated_at": updated_at,
                 "fake_script_content": get_fake_script(),
-                "discord_webhook_url": get_setting("discord_webhook_url", "")
+                "discord_webhook_url": get_setting("discord_webhook_url", ""),
+                "obfuscator_active": os.path.exists(OBFUSCATED_MAIN_PATH),
+                "obfuscation_level": obf_report.get("protectionLevel", "source-transform, limited function VM"),
+                "obfuscated_at": get_setting("script_obf_at", updated_at),
+                "obfuscated_bytes": int(get_setting("script_obf_bytes", "0")),
+                "obfuscator_report": obf_report
             })
 
         # Admin API: Fetch all keys & stats (보호됨)

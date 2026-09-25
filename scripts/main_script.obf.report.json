@@ -1,0 +1,37 @@
+{
+  "engineVersion": "0.12.0",
+  "inputBytes": 6361180,
+  "outputBytes": 25350453,
+  "renamedBindings": 1,
+  "hiddenStrings": 7,
+  "flattenedBranches": 1,
+  "skippedBranches": 0,
+  "dispatcherStates": 2,
+  "virtualizedFunctions": 1,
+  "vmInstructions": 24,
+  "vmFusedSequences": 0,
+  "vmDispatcher": {
+    "strategy": "randomized-balanced-tree",
+    "depth": 3,
+    "nodes": 7
+  },
+  "vmJumpThreading": true,
+  "vmNativeIteratorBridges": 0,
+  "vmShuffledBlocks": 3,
+  "vmOpcodeEncoding": "per-function-affine",
+  "vmSkippedFunctions": 0,
+  "vmSkippedReasons": {},
+  "requireFunctionVm": false,
+  "topLevelVirtualized": false,
+  "inputSha256": "69cacfa8ab01a0c5e72e0888b39bf9fa013f78f51e0bfbbf3aa4cb36c2cf7113",
+  "outputSha256": "f82762fff54d032d35821767964eb00aab5514376fa76b1cb16333638627620f",
+  "compilePassed": true,
+  "executionCompared": false,
+  "passesEnabled": {
+    "controlFlow": true,
+    "virtualize": true,
+    "vmLayout": true
+  },
+  "protectionLevel": "source-transform, branch dispatcher, limited function VM",
+  "elapsedSeconds": 1.904
+}
